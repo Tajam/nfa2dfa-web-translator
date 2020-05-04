@@ -1,155 +1,56 @@
 <!doctype html>
 <html>
   <head>
-    <!--Bootstrap-->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="vendors/bootstrap/css/bootstrap.min.css">
-    <script src="vendors/jquery/jquery-3.5.0.min.js"></script>
-    <script src="vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
-      $(() => {
-          $('[data-toggle="popover"]').popover();
-      });
-    </script>
-    <!--Vue.js-->
-    <script src="vendors/vue/vue.js"></script>
-    <!--Resources-->
-    <link rel="stylesheet" href="resources/css/font.css">
-    <script src="resources/js/util.js"></script>
-    <script src="resources/js/state.js"></script>
-    <script src="resources/js/machine.js"></script>
-    <script src="resources/js/index.js"></script>
-    <title>NFA-ε to DFA Converter</title>
+     <!--Bootstrap-->
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+     <link rel="stylesheet" href="vendors/bootstrap/css/bootstrap.min.css">
+     <script src="vendors/jquery/jquery-3.5.0.min.js"></script>
+     <script src="vendors/bootstrap/js/bootstrap.bundle.min.js"></script>
+     <!--Vue.js-->
+     <script src="vendors/vue/vue.js"></script>
+     <!--Resources-->
+     <link rel="stylesheet" href="resources/css/font.css">
+     <!--Internal-->
+     <script src="resources/js/internal/automaton.js"></script>
+     <script src="resources/js/internal/character.js"></script>
+     <script src="resources/js/internal/label.js"></script>
+     <script src="resources/js/internal/state.js"></script>
+     <script src="resources/js/internal/transition.js"></script>
+     <script src="resources/js/internal/transformer/dfa-transformer.js"></script>
+     <script src="resources/js/internal/transformer/minimizer.js"></script>
+     <script src="resources/js/internal/transformer/nfa-transformer.js"></script>
+     <script src="resources/js/internal/transformer/transformer.js"></script>
+     <!--Adapters-->
+     <script src="resources/js/adapters/adapter.js"></script>
+     <script src="resources/js/adapters/input-adapter.js"></script>
+     <script src="resources/js/adapters/test-adapter.js"></script>
+     <script src="resources/js/adapters/transform-adapter.js"></script>
+     <!--Components-->
+     <script src="resources/js/components/page.js"></script>
+     <script src="resources/js/components/sections/section-header.js"></script>
+     <script src="resources/js/components/sections/section-input.js"></script>
+     <script src="resources/js/components/sections/section-result.js"></script>
+     <script src="resources/js/components/complexes/input-area-graph.js"></script>
+     <script src="resources/js/components/complexes/input-area-table.js"></script>     
+     <script src="resources/js/components/primitives/add-minus-buttons.js"></script>
+     <script src="resources/js/components/primitives/member-card.js"></script>
+     <script src="resources/js/components/primitives/modal-frame.js"></script>
+     <script src="resources/js/components/primitives/nav-tab-frame.js"></script>
+     <script src="resources/js/components/primitives/state-option-buttons.js"></script>
+     <script src="resources/js/components/primitives/subtitle.js"></script>
+     <script src="resources/js/components/primitives/table-frame.js"></script>
+     <script src="resources/js/components/primitives/transition-input-group.js"></script>
+     <!--Main-->
+     <script src="resources/js/index.js"></script>
+     <title>NFA-ε to DFA Converter</title>
   </head>
-  <body class="p-5">
-    <div id="vue">
-      <div class="container">
-        <div class="row">
-          <div class="col text-center">
-            <h1>NFA-ε to DFA Converter</h1>
-            <hr>
-            <button type="button" class="btn btn-link text-secondary" data-toggle="modal" data-target="#group-member-modal">
-              View group members
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="container pt-3 pt-xl-5">
-        <div class="row pt-5">
-          <div class="col">
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#tab-table-input">Table</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#tab-graphical-input">Graph</a>
-              </li>
-            </ul>
-            <div class="p-3 tab-content">
-              <div class="tab-pane fade show active" id="tab-table-input">
-                <div class="table-responsive">
-                  <table class="table table-sm">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th v-for="alphabet in machine.nfae.alphabets" class="text-center text-muted">
-                          <span v-if="alphabet === '__'">ε</span>
-                          <span v-else>{{ alphabet }}</span>
-                        </th>
-                        <th>
-                          <div class="btn-group btn-group-sm">
-                            <button @click="removeAlphabet()" type="button" class="btn btn-outline-secondary">-</button>
-                            <button @click="addAlphabet()" type="button" class="btn btn-outline-secondary">+</button>
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="state in machine.nfae.states.values()" class="text-center">
-                        <th>
-                          <div class="btn-group btn-group-sm">
-                            <span class="btn btn-outline-primary">{{ state.name }}</span>
-                            <button @click="setStartState(state)" v-if="!state.start" type="button" class="btn btn-outline-secondary">Start</button>
-                            <button v-else type="button" class="btn btn-primary">Start</button>
-                            <button @click="addFinalState(state)" v-if="!state.final" type="button" class="btn btn-outline-secondary">Final</button>
-                            <button @click="removeFinalState(state)" v-else type="button" class="btn btn-primary">Final</button>
-                          </div>
-                        </th>
-                        <td v-for="alphabet in machine.nfae.alphabets">
-                          <div class="btn-group btn-group-sm">
-                            <button v-if="state.getDestinations(alphabet).next().done" type="button" class="btn btn-outline-secondary">
-                              <span>∅</span>
-                            </button>
-                            <button @click="removeTransition(state, alphabet, destination)"
-                            v-else v-for="destination in state.getDestinations(alphabet)" 
-                            type="button" 
-                            class="btn btn-outline-primary">
-                              <span>{{ destination.name }}</span>
-                            </button>
-                            <button :disabled="machine.nfae.getAvailableState(alphabet, state.name).length === 0" 
-                            type="button" 
-                            class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
-                            data-toggle="dropdown"></button>
-                            <div class="dropdown-menu p-0">
-                              <button @click="addTransition(state, alphabet, selectable)" 
-                              v-for="selectable in machine.nfae.getAvailableState(alphabet, state.name)" 
-                              class="dropdown-item">
-                                <span>
-                                  {{ selectable.name }}
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th>
-                          <div class="btn-group btn-group-sm">
-                            <button @click="removeState()" type="button" class="btn btn-outline-secondary">-</button>
-                            <button @click="addState()" type="button" class="btn btn-outline-secondary">+</button>
-                          </div>
-                        </th>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div class="tab-pane fade" id="tab-graphical-input">
-                <span>Graphical Input</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!--Group member modal-->
-      <div class="modal fade" id="group-member-modal" tabindex="-1">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header border-0">
-              <h5 class="modal-title">Group Members</h5>
-              <button type="button" class="close" data-dismiss="modal">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <div class="row justify-center pl-3">
-                <div v-for="member in members" class="col-12 col-xl-4 p-0 pr-3 pt-xl-0 pt-3">
-                  <div class="card">
-                    <img src="resources/img/default-user-image.png" class="card-img-top" alt="/resources/img/default-user-image.png">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ member.name }}</h5>
-                      <p class="card-subtitle text-muted">{{ member.role }}</p>
-                      <p class="card-text">{{ member.id }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <body class="pt-5">
+    <div id="main">
+      <application></application>
     </div>
+    <script>
+      new Application().run();
+    </script>
   </body>
 </html>
