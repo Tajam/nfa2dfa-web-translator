@@ -26,7 +26,9 @@ class InputAreaTable {
             <state-option-buttons :state="state"></state-option-buttons>
           </th>
           <td v-for="transition in state.listTransitions()">
-            <transition-input-group :transition="transition"></transition-input-group>
+            <transition-input-group 
+            :hideDropdown="false"
+            :transition="transition"></transition-input-group>
           </td>
         </tr>
       </template>

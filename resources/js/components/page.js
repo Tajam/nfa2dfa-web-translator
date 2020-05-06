@@ -1,6 +1,6 @@
 // @ts-check
 
-/// <reference path="../adapters/adapter.js" />
+/// <reference path="../adapter.js" />
 /// <reference path="sections/section-header.js" />
 /// <reference path="sections/section-input.js" />
 /// <reference path="sections/section-result.js" />

@@ -2,6 +2,8 @@
 
 /// <reference path="state.js" />
 /// <reference path="character.js" />
+/// <reference path="moment.js" />
+/// <reference path="result.js" />
 /// <reference path="transformer/transformer.js" />
 
 /**
@@ -173,10 +175,38 @@ class Automaton {
    * Test the input string using this automaton.
    * @public @method
    * @param {Array<Character>} string
-   * @returns {boolean}
+   * @returns {Result}
    */
   test (string) {
-    throw new Error('not implemented');
+    /** @type {Array<Moment>} */
+    let moments = [];
+    /** @type {Map<string, State>} */
+    let stack = new Map();
+    let startState = this.states.filter(state => state.isStart())[0];
+    for (const closure of startState.eClosure()) {
+      stack.set(closure.stringify(), closure);
+    }
+    string.forEach(character => {
+      /** @type {Map<string, State>} */
+      let transitions = new Map();
+      for (const state of stack.values()) {
+        let t = state.transition(character);
+        if (t === undefined) continue;
+        for (const s of t.listStates()) {
+          transitions.set(s.stringify(), s);
+        }
+      }
+      /** @type {Map<string, State>} */
+      let destinations = new Map();
+      for (const state of transitions.values()) {
+        for (const closure of state.eClosure()) {
+          destinations.set(closure.stringify(), closure);
+        }
+      }
+      stack = destinations;
+      moments.push(new Moment(character, Array.from(destinations.values())));
+    });
+    return new Result(this.name, moments);
   }
 
   /**

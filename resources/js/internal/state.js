@@ -106,6 +106,35 @@ class State {
   }
 
   /**
+   * List out the e-closure states
+   * @public @method
+   * @returns {Array<State>}
+   */
+  eClosure () {
+    /** @type {Map<string, State>} */
+    let states = new Map();
+    /** @type {Map<string, State>} */
+    let stack = new Map();
+    stack.set(this.stringify(), this);
+    while(stack.size > 0) {
+      /** @type {Map<string, State>} */
+      let newStack = new Map();
+      for (const state of stack.values()) {
+        states.set(state.stringify(), state);
+        let transition = state.transition(new Character(-1));
+        if (transition === undefined) continue;
+        for (const newState of transition.listStates()) {
+          let key = newState.stringify();
+          if (states.has(key)) continue;
+          newStack.set(newState.stringify(), newState);
+        }
+      }
+      stack = newStack;
+    }
+    return Array.from(states.values());
+  }
+
+  /**
    * Set this state as start state
    * @public @method
    * @returns {void}

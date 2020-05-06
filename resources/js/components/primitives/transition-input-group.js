@@ -15,17 +15,19 @@ class TransitionInputGroup {
         <span>∅</span>
       </span>
       <button v-else
+      :disabled="display"
       v-for="state in transition.listStates()" 
       @click="transition.removeState(state)"
       class="btn btn-outline-primary">
         <span>{{ state.stringify() }}</span>
       </button>
       <button 
-      :disabled="transition.unlistedStates().length <= 0" 
+      v-if="!display"
+      :disabled="transition.unlistedStates().length <= 0"
       type="button" 
       class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" 
       data-toggle="dropdown"></button>
-      <div class="dropdown-menu p-0">
+      <div v-if="!display" class="dropdown-menu p-0">
         <button 
         v-for="state in transition.unlistedStates()"
         @click="transition.addState(state)" 
@@ -39,7 +41,8 @@ class TransitionInputGroup {
   `;
 
   props = {
-    'transition': Transition
+    'transition': Transition,
+    'display': Boolean
   }
 
   data = () => {
