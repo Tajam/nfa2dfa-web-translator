@@ -6,6 +6,11 @@
 /// <reference path="internal/character.js" />
 /// <reference path="internal/label.js" />
 /// <reference path="internal/result.js" />
+/// <reference path="internal/transformer/dfa-transformer.js" />
+/// <reference path="internal/transformer/minimizer.js" />
+/// <reference path="internal/transformer/nfa-transformer.js" />
+/// <reference path="internal/transformer/relabel-transformer.js" />
+/// <reference path="internal/transformer/transformer.js" />
 
 /**
  * An object that act as a connection bridge between the models and view.
@@ -28,23 +33,48 @@ class Adapter {
   }
 
   /**
-   * The automaton that this object adapting
-   * @private @field @type {Map<string, Automaton>}
+   * A flag to indicate if automaton is converted or not.
+   * @private @field @type {boolean}
    */
-  automatons;
+  converted = false;
+
+  /**
+   * The automaton that this object adapting
+   * @private @field @type {Array<Automaton>}
+   */
+  automatons = [];
 
   /**
    * Constructor for this adapter
    * @public @constructor
    */
   constructor () {
-    this.target = this.AutomatonType.Input;
-    let automaton = new Automaton("NFAe");
+    let automaton = new Automaton(this.AutomatonType.Input);
     automaton.addSymbol(-1);
+    automaton.addSymbol(0);
+    automaton.addSymbol(1);
     let state = automaton.addState(new Label(0));
     state.setStart();
     state.setFinal(true);
-    this.automatons.set(this.AutomatonType.Input, automaton);
+    automaton.addState(new Label(1));
+    automaton.addState(new Label(2));
+    this.automatons.push(automaton);
+  }
+
+  /**
+   * @private @method
+   * @param {AutomatonType} type
+   * @param {function} [callback]
+   * @returns {Automaton}
+   */
+  automaton (type, callback) {
+    for (const [index, item] of this.automatons.entries()) {
+      if (item.equals(type)) {
+        if (callback) callback(index);
+        return item;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -55,7 +85,9 @@ class Adapter {
    */
   listStates (target) {
     if (target === undefined) target = this.AutomatonType.Input;
-    return this.automatons.get(target).listStates();
+    let automaton = this.automaton(target);
+    if (automaton) return this.automaton(target).listStates();
+    return undefined;
   }
 
   /**
@@ -66,7 +98,9 @@ class Adapter {
    */
   listSymbols (target) {
     if (target === undefined) target = this.AutomatonType.Input;
-    return this.automatons.get(target).listSymbols();
+    let automaton = this.automaton(target);
+    if (automaton) return this.automaton(target).listSymbols();
+    return undefined;
   }
 
   /**
@@ -75,7 +109,7 @@ class Adapter {
    * @returns {void}
    */
   addState () {
-    let automaton = this.automatons.get(this.AutomatonType.Input);
+    let automaton = this.automaton(this.AutomatonType.Input);
     let count = Array.from(automaton.listStates()).length;
     automaton.addState(new Label(count));
   }
@@ -86,7 +120,7 @@ class Adapter {
    * @returns {void}
    */
   removeState () {
-    let automaton = this.automatons.get(this.AutomatonType.Input);
+    let automaton = this.automaton(this.AutomatonType.Input);
     let count = Array.from(automaton.listStates()).length - 1;
     automaton.removeState(new Label(count));
   }
@@ -97,7 +131,7 @@ class Adapter {
    * @returns {void}
    */
   addSymbol () {
-    let automaton = this.automatons.get(this.AutomatonType.Input);
+    let automaton = this.automaton(this.AutomatonType.Input);
     let count = Array.from(automaton.listSymbols()).length - 1;
     automaton.addSymbol(count);
   }
@@ -108,7 +142,7 @@ class Adapter {
    * @returns {void}
    */
   removeSymbol () {
-    let automaton = this.automatons.get(this.AutomatonType.Input);
+    let automaton = this.automaton(this.AutomatonType.Input);
     let count = Array.from(automaton.listSymbols()).length;
     if (count <= 1) return;
     automaton.removeSymbol(count - 2);
@@ -122,7 +156,21 @@ class Adapter {
    * @returns {void}
    */
   convert () {
-    throw new Error("Not implemented.");
+    this.converted = true;
+    let inputAutomaton = this.automaton(this.AutomatonType.Input);
+    this.automatons.splice(1, this.automatons.length - 1);
+    let nfaeAutomaton = inputAutomaton.clone(this.AutomatonType.NFAe);
+    this.automatons.push(nfaeAutomaton);
+    let nfaAutomaton = nfaeAutomaton.transform(new NFATransformer(this.AutomatonType.NFA));
+    this.automatons.push(nfaAutomaton);
+  }
+
+  /**
+   * Check if the automaton is converted or not.
+   * @returns {boolean} 
+   */
+  isConverted () {
+    return this.converted;
   }
 
   /**
@@ -130,10 +178,14 @@ class Adapter {
    * Ignore if any missing.
    * @public @method
    * @param {Array<Character>} string
-   * @returns {Map<AutomatonType, Result>}
+   * @returns {Array<Result>}
    */
   tests (string) {
-    throw new Error("Not implemented.");
+    let results = [];
+    for (const automaton of this.automatons) {
+      results.push(automaton.test(string));
+    }
+    return results;
   }
 
 }

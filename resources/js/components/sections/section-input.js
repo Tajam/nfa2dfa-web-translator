@@ -1,6 +1,6 @@
 // @ts-check
 
-/// <reference path="../../adapters/adapter.js" />
+/// <reference path="../../adapter.js" />
 /// <reference path="../primitives/subtitle.js" />
 /// <reference path="../primitives/nav-tab-frame.js" />
 /// <reference path="../complexes/input-area-table.js" />
@@ -20,9 +20,24 @@ class SectionInput {
           <nav-tab-frame :items="items">
             <template #tab-table-input>
               <input-area-table :adapter="adapter"></input-area-table>
+              <hr>
+              <button @click="adapter.convert()" type="button" class="btn btn-sm btn-outline-primary float-right">
+                <span>Convert</span>
+              </button>
             </template>
             <template #tab-graphical-input>
               <span>Graph</span>
+              <hr>
+              <button @click="adapter.convert()" type="button" class="btn btn-sm btn-outline-primary float-right">
+                <span>Convert</span>
+              </button>
+            </template>
+            <template #tab-file-input>
+              <span>Upload</span>
+              <hr>
+              <button @click="adapter.convert()" type="button" class="btn btn-sm btn-outline-primary float-right">
+                <span>Convert</span>
+              </button>
             </template>
           </nav-tab-frame>
         </div>
@@ -51,6 +66,10 @@ class SectionInput {
         {
           id: 'tab-graphical-input',
           name: 'Graph'
+        },
+        {
+          id: 'tab-file-input',
+          name: 'Upload'
         }
       ]
     };

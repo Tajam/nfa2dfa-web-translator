@@ -40,6 +40,33 @@ class Automaton {
   }
 
   /**
+   * Clone this automaton with a new name and returns it.
+   * @public @method
+   * @param {string} name
+   * @returns {Automaton} 
+   */
+  clone (name) {
+    let automaton = new Automaton(name);
+    for (const state of this.states) {
+      state.cloneInto(automaton);
+    }
+    for (const character of this.alphabet) {
+      character.cloneInto(automaton);
+    }
+    for (const state of this.states) {
+      let s = automaton.state(state);
+      for (const transition of state.listTransitions()) {
+        let t = s.transition(transition);
+        for (const destination of transition.listStates()) {
+          let d = automaton.state(destination);
+          t.addState(d);
+        }
+      }
+    }
+    return automaton;
+  }
+
+  /**
    * Add new unique state into this automaton.
    * @public @method
    * @param {Label} label
@@ -186,19 +213,20 @@ class Automaton {
     for (const closure of startState.eClosure()) {
       stack.set(closure.stringify(), closure);
     }
+    moments.push(new Moment(new Character(-1), Array.from(stack.values())));
     string.forEach(character => {
       /** @type {Map<string, State>} */
-      let transitions = new Map();
+      let states = new Map();
       for (const state of stack.values()) {
         let t = state.transition(character);
         if (t === undefined) continue;
         for (const s of t.listStates()) {
-          transitions.set(s.stringify(), s);
+          states.set(s.stringify(), s);
         }
       }
       /** @type {Map<string, State>} */
       let destinations = new Map();
-      for (const state of transitions.values()) {
+      for (const state of states.values()) {
         for (const closure of state.eClosure()) {
           destinations.set(closure.stringify(), closure);
         }

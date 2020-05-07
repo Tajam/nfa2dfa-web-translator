@@ -26,6 +26,16 @@ class Label {
   }
 
   /**
+   * Clone a new Label and returns it.
+   * @public @method
+   * @returns {Label}
+   */
+  clone () {
+    let label = new Label(Array.from(this.values));
+    return label;
+  }
+
+  /**
    * Comparative function for this object.
    * @public @method
    * @param {Label | Set} other

@@ -53,6 +53,20 @@ class State {
   }
 
   /**
+   * Make another state with the same label
+   * and register it into an automaton.
+   * @public @method
+   * @param {Automaton} automaton
+   * @returns {State}
+   */
+  cloneInto (automaton) {
+    let state = automaton.addState(this.label.clone());
+    if (this.start) state.setStart();
+    if (this.final) state.setFinal(true);
+    return state;
+  }
+
+  /**
    * Initiate a new transition with an symbol.
    * @public @method
    * @param {Character} symbol

@@ -1,6 +1,6 @@
 // @ts-check
 
-/// <reference path="../../adapters/adapter.js" />
+/// <reference path="../../adapter.js" />
 /// <reference path="../primitives/table-frame.js" />
 /// <reference path="../primitives/add-minus-buttons.js" />
 /// <reference path="../primitives/state-option-buttons.js" />
@@ -23,26 +23,26 @@ class InputAreaTable {
       <template #body-content>
         <tr v-for="state in adapter.listStates()" class="text-center">
           <th>
-            <state-option-buttons :state="state"></state-option-buttons>
+            <state-option-buttons :display="false" :state="state"></state-option-buttons>
           </th>
           <td v-for="transition in state.listTransitions()">
             <transition-input-group 
-            :hideDropdown="false"
+            :display="false"
             :transition="transition"></transition-input-group>
           </td>
         </tr>
       </template>
       <template #head-last>
         <add-minus-button
-        @click-plus="adapter.input().addSymbol()" 
-        @click-minus="adapter.input().removeSymbol()" 
+        @click-plus="adapter.addSymbol()" 
+        @click-minus="adapter.removeSymbol()" 
         :disablePlus="false"
         :disableMinus="false"></add-minus-button>
       </template>
       <template #body-last>
       <add-minus-button
-      @click-plus="adapter.input().addState()" 
-      @click-minus="adapter.input().removeState()" 
+      @click-plus="adapter.addState()"
+      @click-minus="adapter.removeState()" 
       :disablePlus="false"
       :disableMinus="false"></add-minus-button>
       </template>

@@ -1,5 +1,7 @@
 // @ts-check
 
+/// <reference path="automaton.js"/>
+
 /**
  * An object that represents symbol in alphabet.
  * @public
@@ -29,6 +31,19 @@ class Character {
     if (identifier < 0) {
       this.symbol = "ε";
     }
+  }
+
+  /**
+   * Make another character with the value
+   * and register it into an automaton.
+   * @public @method
+   * @param {Automaton} automaton
+   * @returns {Character}
+   */
+  cloneInto (automaton) {
+    let character = automaton.addSymbol(this.identifier);
+    if (this.symbol) character.symbol = this.symbol;
+    return character;
   }
 
   /**
