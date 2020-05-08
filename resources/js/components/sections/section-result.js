@@ -28,7 +28,7 @@ class SectionResult {
             <template #tab-original-input>
               <automaton-table v-if="adapter.isConverted()" :adapter="adapter" 
               title="Original NFA-ε" :automatonType="adapter.AutomatonType.NFAe"></automaton-table>
-              <converted-message></converted-message>
+              <converted-message v-else></converted-message>
             </template>
             <template #tab-nfa-conversion>
               <automaton-table v-if="adapter.isConverted()" :adapter="adapter" 

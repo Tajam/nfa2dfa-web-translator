@@ -3,6 +3,7 @@
 /// <reference path="../../adapter.js" />
 /// <reference path="../primitives/add-minus-buttons.js" />
 /// <reference path="../primitives/test-inputs.js" />
+/// <reference path="../primitives/test-result.js" />
 /// <reference path="../../internal/character.js" />
 /// <reference path="../../internal/result.js" />
 
@@ -18,22 +19,29 @@ class ResultAreaTest {
     <div>
       <div class="row">
         <div class="col">
-          <button type="button" class="btn btn-outline-primary btn-sm">Test all</button>
-          <button type="button" class="btn btn-outline-secondary btn-sm">Clear all</button>
+          <button 
+          type="button" 
+          class="btn btn-outline-primary btn-sm"
+          @click="adapter.testAll()">Test all</button>
+          <button 
+          type="button" 
+          class="btn btn-outline-secondary btn-sm"
+          @click="adapter.resetTests()">Clear all</button>
           <hr>
         </div>
       </div>
-      <div v-for="test in tests" class="row">
+      <div v-for="test in adapter.listTestData()" class="row">
         <div class="col">
-          <test-inputs :adapter="adapter" @test-click="runTest"></test-inputs>
+          <test-result v-if="test.hasResult()" :adapter="adapter" :test="test"></test-result>
+          <test-inputs v-else :adapter="adapter" :test="test"></test-inputs>
           <hr>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <add-minus-button
-          @click-plus="addTest(tests)" 
-          @click-minus="removeTest(tests)" 
+          @click-plus="adapter.addTest()" 
+          @click-minus="adapter.removeTest()" 
           :disablePlus="false"
           :disableMinus="false"></add-minus-button>
         </div>
@@ -43,37 +51,12 @@ class ResultAreaTest {
 
   components = {
     'add-minus-button': new AddMinusButtons(),
-    'test-inputs': new TestInputs()
+    'test-inputs': new TestInputs(),
+    'test-result': new TestResult()
   }
 
   props = {
     'adapter': Adapter
-  }
-
-  methods = {
-    /** @param {Array<Character>} characters */
-    runTest: (characters) => {
-      for (const character of characters) {
-        console.log(character.stringify());
-      }
-    },
-    /** @param {Array<Array>} tests */
-    addTest: (tests) => {
-      tests.push([]);
-    },
-    /** @param {Array<Array>} tests */
-    removeTest: (tests) => {
-      let len = tests.length;
-      if (len > 1) {
-        tests.splice(len - 1, 1);
-      }
-    }
-  }
-
-  data = () => {
-    return {
-      tests: [[]]
-    }
   }
 
 }

@@ -51,7 +51,7 @@ class Result {
 
   /**
    * Show that if this language is acceptable in the automaton
-   *  @public @method
+   * @public @method
    * @returns {boolean}
    */
   acceptable () {

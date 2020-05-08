@@ -1,5 +1,6 @@
 // @ts-check
 
+/// <reference path="test-data.js" />
 /// <reference path="internal/automaton.js" />
 /// <reference path="internal/transition.js" />
 /// <reference path="internal/state.js" />
@@ -31,6 +32,12 @@ class Adapter {
     DFA: "DFA",
     DFAm: "DFA-min"
   }
+
+  /**
+  * Testing data
+  * @private @field @type {Array<TestData>}
+  */
+  testData = [];
 
   /**
    * A flag to indicate if automaton is converted or not.
@@ -157,6 +164,7 @@ class Adapter {
    */
   convert () {
     this.converted = true;
+    this.resetTests();
     let inputAutomaton = this.automaton(this.AutomatonType.Input);
     this.automatons.splice(1, this.automatons.length - 1);
     let nfaeAutomaton = inputAutomaton.clone(this.AutomatonType.NFAe);
@@ -174,18 +182,54 @@ class Adapter {
   }
 
   /**
-   * Perform tests on all automatons.
-   * Ignore if any missing.
+   * Execute all the tests
    * @public @method
-   * @param {Array<Character>} string
-   * @returns {Array<Result>}
+   * @returns {void}
    */
-  tests (string) {
-    let results = [];
-    for (const automaton of this.automatons) {
-      results.push(automaton.test(string));
+  testAll () {
+    for (const test of this.testData) {
+      test.tests();
     }
-    return results;
+  }
+
+  /**
+   * Add a new test.
+   * @public @method
+   * @returns {void}
+   */
+  addTest () {
+    this.testData.push(new TestData(this.automatons));
+  }
+
+  /**
+   * Remove a test.
+   * @public @method
+   * @returns {void}
+   */
+  removeTest () {
+    let len = this.testData.length;
+    if (len > 1) {
+      this.testData.splice(len - 1, 1);
+    }
+  }
+
+  /**
+   * Reset the test data. Leaving only a blank test.
+   * @public @method
+   * @returns {void}
+   */
+  resetTests () {
+    this.testData.splice(0, this.testData.length);
+    this.testData.push(new TestData(this.automatons));
+  }
+
+  /**
+   * List out all the added tests.
+   * @public @method
+   * @returns {IterableIterator<TestData>}
+   */
+  listTestData () {
+    return this.testData.values();
   }
 
 }
