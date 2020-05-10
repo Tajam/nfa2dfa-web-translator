@@ -22,9 +22,9 @@ class InputAreaTable {
       </template>
       <template #body-content>
         <tr v-for="state in adapter.listStates()" class="text-center">
-          <th>
+          <td>
             <state-option-buttons :display="false" :state="state"></state-option-buttons>
-          </th>
+          </td>
           <td v-for="transition in state.listTransitions()">
             <transition-input-group 
             :display="false"
@@ -40,11 +40,11 @@ class InputAreaTable {
         :disableMinus="false"></add-minus-button>
       </template>
       <template #body-last>
-      <add-minus-button
-      @click-plus="adapter.addState()"
-      @click-minus="adapter.removeState()" 
-      :disablePlus="false"
-      :disableMinus="false"></add-minus-button>
+        <add-minus-button
+        @click-plus="adapter.addState()"
+        @click-minus="adapter.removeState()" 
+        :disablePlus="false"
+        :disableMinus="false"></add-minus-button>
       </template>
     </table-frame>
   `;

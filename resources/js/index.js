@@ -1,6 +1,6 @@
 // @ts-check
 
-/// <reference path="adapters/adapter.js" />
+/// <reference path="adapter.js" />
 /// <reference path="components/page.js" />
 
 /**

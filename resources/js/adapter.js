@@ -30,7 +30,9 @@ class Adapter {
     NFAe: "NFA-ε",
     NFA: "NFA",
     DFA: "DFA",
-    DFAm: "DFA-min"
+    DFAr: "DFA re-label",
+    DFAm1: "DFA-min-1",
+    DFAm2: "DFA-min-2"
   }
 
   /**
@@ -69,6 +71,7 @@ class Adapter {
   }
 
   /**
+   * Get specified automaton from this adapter
    * @private @method
    * @param {AutomatonType} type
    * @param {function} [callback]
@@ -171,6 +174,10 @@ class Adapter {
     this.automatons.push(nfaeAutomaton);
     let nfaAutomaton = nfaeAutomaton.transform(new NFATransformer(this.AutomatonType.NFA));
     this.automatons.push(nfaAutomaton);
+    let dfaAutomaton = nfaAutomaton.transform(new DFATransformer(this.AutomatonType.DFA));
+    this.automatons.push(dfaAutomaton);
+    let reAutomaton = dfaAutomaton.transform(new RelabelTransformer(this.AutomatonType.DFAr));
+    this.automatons.push(reAutomaton);
   }
 
   /**
@@ -182,7 +189,7 @@ class Adapter {
   }
 
   /**
-   * Execute all the tests
+   * Execute all the tests.
    * @public @method
    * @returns {void}
    */
@@ -198,7 +205,13 @@ class Adapter {
    * @returns {void}
    */
   addTest () {
-    this.testData.push(new TestData(this.automatons));
+    let testAutomatons = [];
+    for (const automaton of this.automatons) {
+      for (const name of this.listTestCandidates()) {
+        if (automaton.equals(name)) testAutomatons.push(automaton);
+      }
+    }
+    this.testData.push(new TestData(testAutomatons));
   }
 
   /**
@@ -230,6 +243,19 @@ class Adapter {
    */
   listTestData () {
     return this.testData.values();
+  }
+
+  /**
+   * List out all testing automatons name.
+   * @public @method
+   * @returns {Object}
+   */
+  listTestCandidates () {
+    return {
+      "NFA-ε": this.AutomatonType.NFAe,
+      "NFA": this.AutomatonType.NFA,
+      "DFA": this.AutomatonType.DFAr
+    };
   }
 
 }

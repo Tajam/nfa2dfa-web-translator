@@ -7,39 +7,39 @@
 /// <reference path="../primitives/transition-input-group.js" />
 
 /**
- * An area to show the original NFA-ε table.
+ * An area to show any automaton table.
  * @public
  */
 class ResultAreaAutomatonTable {
 
   /* template */
   template = `
-  <div>
-    <sub-title :title="title"><hr></sub-title>
-    <div class="row">
-      <div class="col">
-        <table-frame :headLast="false" :bodyLast="false">
-          <template #head-content>
-            <th v-for="symbol in adapter.listSymbols(automatonType)" class="text-center text-muted">
-              <span>{{ symbol.stringify() }}</span>
-            </th>
-          </template>
-          <template #body-content>
-            <tr v-for="state in adapter.listStates(automatonType)" class="text-center">
-              <th>
-                <state-option-buttons :display="true" :state="state"></state-option-buttons>
+    <div>
+      <sub-title :title="title"><hr></sub-title>
+      <div class="row">
+        <div class="col">
+          <table-frame :headLast="false" :bodyLast="false">
+            <template #head-content>
+              <th v-for="symbol in adapter.listSymbols(automatonType)" class="text-center text-muted">
+                <span>{{ symbol.stringify() }}</span>
               </th>
-              <td v-for="transition in state.listTransitions()">
-                <transition-input-group 
-                :display="true"
-                :transition="transition"></transition-input-group>
-              </td>
-            </tr>
-          </template>
-        </table-frame>
+            </template>
+            <template #body-content>
+              <tr v-for="state in adapter.listStates(automatonType)" class="text-center">
+                <td>
+                  <state-option-buttons :display="true" :state="state"></state-option-buttons>
+                </td>
+                <td v-for="transition in state.listTransitions()">
+                  <transition-input-group 
+                  :display="true"
+                  :transition="transition"></transition-input-group>
+                </td>
+              </tr>
+            </template>
+          </table-frame>
+        </div>
       </div>
     </div>
-  </div>
   `;
 
   props = {

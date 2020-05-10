@@ -1,0 +1,15 @@
+.table {
+  width: unset!important;
+}
+
+.btn-outline-primary:disabled {
+  opacity: unset!important;
+}
+
+.btn-primary:disabled {
+  opacity: unset!important;
+}
+
+.btn-outline-secondary:disabled {
+  opacity: unset!important;
+}

@@ -44,11 +44,11 @@ class State {
   /**
    * Constructor for new State instance.
    * @public @constructor
-   * @param {Label} label
+   * @param {Label} value
    * @param {Automaton} automaton
    */
-  constructor (label, automaton) {
-    this.label = label;
+  constructor (value, automaton) {
+    this.label = value;
     this.automaton = automaton;
   }
 
@@ -64,6 +64,35 @@ class State {
     if (this.start) state.setStart();
     if (this.final) state.setFinal(true);
     return state;
+  }
+
+  /**
+   * Merge 
+   * @public @method
+   * @param {Array<State>} states
+   * @returns {State}
+   */
+  merge (states) {
+    let label = new Label([]);
+    states.push(this);
+    for (const state of states) {
+      label = label.merge(state.label);
+    }
+    let newState = this.automaton.addState(label);
+    if (newState !== undefined) {
+      for (const state of states) {
+        if (state.isFinal()) newState.setFinal(true);
+        for (const transition of state.listTransitions()) {
+          let newTransition = newState.transition(transition);
+          for (const s of transition.listStates()) {
+            newTransition.addState(s);
+          }
+        }
+      }
+    } else {
+      newState = this.automaton.state(label);
+    }
+    return newState;
   }
 
   /**
@@ -197,6 +226,18 @@ class State {
    */
   isFinal () {
     return this.final;
+  }
+
+  /**
+   * Relabing this state. Fail silently if label already been used.
+   * @public @method
+   * @param {Label} label
+   * @returns {void}
+   */
+  relabel (label) {
+    if (this.automaton.state(label) === undefined) {
+      this.label = label;
+    }
   }
 
   /**

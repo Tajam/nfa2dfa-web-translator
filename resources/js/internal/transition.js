@@ -64,6 +64,15 @@ class Transition {
   }
 
   /**
+   * Clear off all the states from this transition.
+   * @public @method
+   * @returns {void}
+   */
+  clear () {
+    this.destinations.splice(0, this.destinations.length);
+  }
+
+  /**
    * Get the state with the specified label.
    * Pass in a callback function with a number parameter to retrive the index.
    * @public @method

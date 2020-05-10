@@ -15,13 +15,13 @@ class Label {
   /**
    * Constructor for new Label instance.
    * @public @constructor
-   * @param {Array<String> | number} values
+   * @param {Array<String> | number} value
    */
-  constructor (values) {
-    if (typeof values == 'number') {
-      this.values = new Set([this.translate(values)]);
+  constructor (value) {
+    if (typeof value == 'number') {
+      this.values = new Set([this.translate(value)]);
     } else {
-      this.values = new Set(values);
+      this.values = new Set(value);
     }
   }
 
@@ -33,6 +33,20 @@ class Label {
   clone () {
     let label = new Label(Array.from(this.values));
     return label;
+  }
+
+  /**
+   * Merge with another label and generate a new one.
+   * @public @method
+   * @param {Label} other 
+   * @returns {Label}
+   */
+  merge (other) {
+    let newValue = Array.from(this.values);
+    for (const value of other.values) {
+      newValue.push(value);
+    }
+    return new Label(newValue);
   }
 
   /**
@@ -61,9 +75,10 @@ class Label {
    */
   stringify () {
     let array = Array.from(this.values);
+    if (array.length <= 0) return "∅";
     if (array.length === 1) return array[0];
-    let text = array.join(", ");
-    return `\{{text}\}`;
+    let text = array.join("");
+    return `${text}`;
   }
 
   /**

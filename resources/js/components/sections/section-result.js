@@ -4,6 +4,7 @@
 /// <reference path="../primitives/subtitle.js" />
 /// <reference path="../primitives/nav-tab-frame.js" />
 /// <reference path="../primitives/not-converted-message.js" />
+/// <reference path="../complexes/result-area-dfa.js" />
 /// <reference path="../complexes/result-area-test.js" />
 /// <reference path="../complexes/result-area-automaton-table.js" />
 
@@ -36,7 +37,10 @@ class SectionResult {
               <converted-message v-else></converted-message>
             </template>
             <template #tab-dfa-conversion>
-              <span v-if="adapter.isConverted()">DFA</span>
+              <result-area-dfa v-if="adapter.isConverted()" :adapter="adapter" 
+              title="Converted to DFA" :automatonType="adapter.AutomatonType.DFA"></result-area-dfa>
+              <automaton-table v-if="adapter.isConverted()" :adapter="adapter" 
+              title="Relabeled" :automatonType="adapter.AutomatonType.DFAr"></automaton-table>
               <converted-message v-else></converted-message>
             </template>
             <template #tab-dfa-minimization>
@@ -54,7 +58,8 @@ class SectionResult {
     'nav-tab-frame': new NavTabFrame(),
     'result-area-test': new ResultAreaTest(),
     'automaton-table': new ResultAreaAutomatonTable(),
-    'converted-message': new NotConvertedMessage()
+    'converted-message': new NotConvertedMessage(),
+    'result-area-dfa': new ResultAreaDFA()
   };
 
   props = {
