@@ -168,7 +168,6 @@ class Adapter {
    */
   convert () {
     this.converted = true;
-    this.resetTests();
     let inputAutomaton = this.automaton(this.AutomatonType.Input);
     this.automatons.splice(1, this.automatons.length - 1);
     let nfaeAutomaton = inputAutomaton.clone(this.AutomatonType.NFAe);
@@ -183,6 +182,7 @@ class Adapter {
     this.automatons.push(reAutomaton);
     this.automatons.push(m1Automaton);
     this.automatons.push(m2Automaton);
+    this.resetTests();
   }
 
   /**
