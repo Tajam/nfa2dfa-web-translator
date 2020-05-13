@@ -75,7 +75,7 @@ class Character {
    * @returns {string}
    */
   stringify () {
-    if (this.symbol != undefined) {
+    if (this.symbol !== undefined) {
       return this.symbol;
     }
     return this.identifier.toString();

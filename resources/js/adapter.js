@@ -8,7 +8,8 @@
 /// <reference path="internal/label.js" />
 /// <reference path="internal/result.js" />
 /// <reference path="internal/transformer/dfa-transformer.js" />
-/// <reference path="internal/transformer/minimizer.js" />
+/// <reference path="internal/transformer/grouping-minimizer.js" />
+/// <reference path="internal/transformer/unreachable-minimizer.js" />
 /// <reference path="internal/transformer/nfa-transformer.js" />
 /// <reference path="internal/transformer/relabel-transformer.js" />
 /// <reference path="internal/transformer/transformer.js" />
@@ -171,13 +172,17 @@ class Adapter {
     let inputAutomaton = this.automaton(this.AutomatonType.Input);
     this.automatons.splice(1, this.automatons.length - 1);
     let nfaeAutomaton = inputAutomaton.clone(this.AutomatonType.NFAe);
-    this.automatons.push(nfaeAutomaton);
     let nfaAutomaton = nfaeAutomaton.transform(new NFATransformer(this.AutomatonType.NFA));
-    this.automatons.push(nfaAutomaton);
     let dfaAutomaton = nfaAutomaton.transform(new DFATransformer(this.AutomatonType.DFA));
-    this.automatons.push(dfaAutomaton);
     let reAutomaton = dfaAutomaton.transform(new RelabelTransformer(this.AutomatonType.DFAr));
+    let m1Automaton = reAutomaton.transform(new UnreachableMinimizer(this.AutomatonType.DFAm1));
+    let m2Automaton = m1Automaton.transform(new GroupingMinimizer(this.AutomatonType.DFAm2));
+    this.automatons.push(nfaeAutomaton);
+    this.automatons.push(nfaAutomaton);
+    this.automatons.push(dfaAutomaton);
     this.automatons.push(reAutomaton);
+    this.automatons.push(m1Automaton);
+    this.automatons.push(m2Automaton);
   }
 
   /**
@@ -207,8 +212,11 @@ class Adapter {
   addTest () {
     let testAutomatons = [];
     for (const automaton of this.automatons) {
-      for (const name of this.listTestCandidates()) {
-        if (automaton.equals(name)) testAutomatons.push(automaton);
+      for (const candidate of this.listTestCandidates()) {
+        if (automaton.equals(candidate.value)) {
+          testAutomatons.push(automaton);
+          break;
+        }
       }
     }
     this.testData.push(new TestData(testAutomatons));
@@ -233,7 +241,7 @@ class Adapter {
    */
   resetTests () {
     this.testData.splice(0, this.testData.length);
-    this.testData.push(new TestData(this.automatons));
+    this.addTest();
   }
 
   /**
@@ -251,11 +259,11 @@ class Adapter {
    * @returns {Object}
    */
   listTestCandidates () {
-    return {
-      "NFA-ε": this.AutomatonType.NFAe,
-      "NFA": this.AutomatonType.NFA,
-      "DFA": this.AutomatonType.DFAr
-    };
+    return [
+      {name: "NFA-ε", value: this.AutomatonType.NFAe},
+      {name: "NFA", value: this.AutomatonType.NFA},
+      {name: "DFA", value: this.AutomatonType.DFAm2}
+    ];
   }
 
 }

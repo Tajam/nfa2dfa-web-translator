@@ -85,11 +85,11 @@ class Automaton {
   /**
    * Remove an unique state from this automaton.
    * @public @method
-   * @param {Label} label
+   * @param {Label | State} value
    * @returns {void}
    */
-  removeState (label) {
-    this.state(label, index => {
+  removeState (value) {
+    this.state(value, index => {
       if (this.states[index].isStart()) return;
       if (this.states[index].isFinal()) {
         if (this.states.filter(item => item.isFinal()).length <= 1) return;

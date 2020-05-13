@@ -47,10 +47,10 @@ class TestResult {
       </div>
       <div class="d-block btn-group btn-group-sm mb-1">
         <button 
-        v-for="(key, name) in adapter.listTestCandidates()"
+        v-for="item in adapter.listTestCandidates()"
         class="btn"
-        :class="[(key === option) ? primary : outlinePrimary ]"
-        @click="option = key">{{ name }}</button>
+        :class="[(item.value === option) ? primary : outlinePrimary ]"
+        @click="option = item.value">{{ item.name }}</button>
       </div>
       <div>
         <button @click="test.reset()" type="button" class="btn btn-sm btn-outline-secondary">

@@ -140,4 +140,13 @@ class Transition {
       (this.symbol.equals(other)) : (this.symbol.equals(other.symbol)); 
   }
 
+  /**
+   * Get the character of this transition
+   * @public @method
+   * @returns {string}
+   */
+  stringify () {
+    return this.symbol.stringify();
+  }
+
 }

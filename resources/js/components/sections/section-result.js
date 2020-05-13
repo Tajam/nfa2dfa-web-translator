@@ -44,7 +44,10 @@ class SectionResult {
               <converted-message v-else></converted-message>
             </template>
             <template #tab-dfa-minimization>
-              <span v-if="adapter.isConverted()">Minimized</span>
+              <automaton-table v-if="adapter.isConverted()" :adapter="adapter" 
+              title="Removed unreachable states" :automatonType="adapter.AutomatonType.DFAm1"></automaton-table>
+              <automaton-table v-if="adapter.isConverted()" :adapter="adapter" 
+              title="Equivalent theorem minimization" :automatonType="adapter.AutomatonType.DFAm2"></automaton-table>
               <converted-message v-else></converted-message>
             </template>
           </nav-tab-frame>
