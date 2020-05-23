@@ -25,20 +25,6 @@ class SectionInput {
                 <span>Convert</span>
               </button>
             </template>
-            <template #tab-graphical-input>
-              <span>Graph</span>
-              <hr>
-              <button @click="adapter.convert()" type="button" class="btn btn-sm btn-outline-primary float-right">
-                <span>Convert</span>
-              </button>
-            </template>
-            <template #tab-file-input>
-              <span>Upload</span>
-              <hr>
-              <button @click="adapter.convert()" type="button" class="btn btn-sm btn-outline-primary float-right">
-                <span>Convert</span>
-              </button>
-            </template>
           </nav-tab-frame>
         </div>
       </div>
@@ -62,14 +48,6 @@ class SectionInput {
         {
           id: 'tab-table-input',
           name: 'Table'
-        },
-        {
-          id: 'tab-graphical-input',
-          name: 'Graph'
-        },
-        {
-          id: 'tab-file-input',
-          name: 'Upload'
         }
       ]
     };
