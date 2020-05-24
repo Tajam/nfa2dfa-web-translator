@@ -54,19 +54,19 @@ class SectionHeader {
           name: 'Oo Jin Heng',
           id: '1161303917',
           role: 'Leader',
-          url: 'resources/img/default-user-image.png'
+          url: 'resources/img/1161303917.jpg'
         },
         {
           name: 'Ong Jia Jun',
           id: '1161201687',
           role: 'Member',
-          url: 'resources/img/default-user-image.png'
+          url: 'resources/img/1161201687.jpg'
         },
         {
           name: 'Kang Shu Ern',
           id: '1151205225',
           role: 'Member',
-          url: 'resources/img/default-user-image.png'
+          url: 'resources/img/1151205225.jpg'
         }
       ]
     };
