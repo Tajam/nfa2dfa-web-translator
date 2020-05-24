@@ -9,7 +9,7 @@ class MemberCard {
   /* template */
   template = `
     <div class="card">
-      <img :src="url" class="card-img-top" :alt="alt">
+      <img :src="url" class="card-img-top img-fluid" :alt="alt">
       <div class="card-body">
         <h5 class="card-title">{{ name }}</h5>
         <p class="card-subtitle text-muted">{{ role }}</p>
